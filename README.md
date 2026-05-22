@@ -2,21 +2,47 @@
 
 Aplicación web de notas personales que permite crear, editar, eliminar y categorizar notas con una interfaz intuitiva y organizada.
 
-## Stack
+---
 
-- **React** con **Vite**
-- **Material UI** (MUI) para la interfaz de componentes
+## Stack Tecnológico
+
+- **React** para componentes y hooks
+- **Vite** para
+- **Material UI** y **CSS** para estilos
 - **Context API** para manejo de estado global
 - **localStorage** para persistencia de datos local
 
-## Instalación
+---
+
+## Instalación y configuración
+
+1. Clona el repositorio:
+
+```bash
+git clone https://github.com/ali-zunega/MindDrop.git
+```
+
+2. Navega a la carpeta del proyecto:
+
+```bash
+cd MindDrop
+```
+
+3. Instala dependencias:
 
 ```bash
 npm install
+```
+
+4. Ejecuta el servidor de desarrollo:
+
+```bash
 npm run dev
 ```
 
 La aplicación se abrirá en `http://localhost:5173`.
+
+---
 
 ## Scripts
 
@@ -28,9 +54,11 @@ La aplicación se abrirá en `http://localhost:5173`.
 | `npm run lint`    | Ejecuta ESLint                            |
 | `npm run test`    | Ejecuta la suite de pruebas (Vitest/Jest) |
 
+---
+
 ## Estructura del proyecto
 
-```
+```bash
 src/
 ├── assets/            # Imágenes, logos, estilos globales
 ├── components/        # Componentes reutilizables de la UI
@@ -54,6 +82,8 @@ src/
 └── __tests__/         # Tests unitarios / de integración
 ```
 
+---
+
 ## Modelo de datos
 
 ### user o currentUser
@@ -65,7 +95,9 @@ src/
   "password": "password_mock"
 }
 ```
+
 Campos y tipos de datos:
+
 - **id**: `string` (UUID único del usuario)
 - **email**: `string` (Correo electrónico del usuario)
 - **password**: `string` (Contraseña en texto plano — solo para mock local)
@@ -83,7 +115,9 @@ Campos y tipos de datos:
   "updatedAt": "2026-05-20T23:30:00.000Z"
 }
 ```
+
 Campos y tipos de datos:
+
 - **id**: `string` (UUID único de la nota)
 - **userId**: `string` (ID del usuario propietario, relación con `user.id`)
 - **title**: `string`
@@ -102,21 +136,40 @@ Campos y tipos de datos:
   "color": "#3f51b5"
 }
 ```
+
 Campos y tipos de datos:
+
 - **id**: `string` (UUID único de la categoría)
 - **userId**: `string` (ID del usuario propietario, relación con `user.id`)
-- **name**: `string`
+- **name**: `string` (Personal | Trabajo | Estudio | Ideas)
 - **color**: `string` (Código hexadecimal, ej. `#3f51b5`)
 
-## Decisión de diseño: Manejo de estado con Context API
+---
 
-Se eligió **Context API** sobre Redux por las siguientes razones:
+## 📌 Decisiones de Diseño
 
-1. **Evita Prop Drilling** — Las notas y categorías se consumen desde la Sidebar (filtro), el Buscador y la lista principal. Context permite que cualquier componente acceda a estos datos sin pasarlos manualmente por cada nivel.
+### ¿Por qué usamos Context API?
 
-2. **Complejidad justificada** — Redux añade boilerplate (store, reducers, actions, dispatch) que no se justifica en una app que persiste datos localmente de forma síncrona. Context API mantiene el código legible y eficiente para este alcance.
+Se eligió **Context API** porque es la herramienta nativa de React para compartir información entre componentes sin complicaciones.
 
-3. **Sincronización limpia con localStorage** — El `NotesProvider` inicializa el estado leyendo de localStorage y persiste los cambios automáticamente mediante un `useEffect` cada vez que el estado de notas o categorías se modifica.
+- **Evita pasar datos "mano en mano":** Componentes alejados como la barra lateral (filtros), el buscador y la lista de notas necesitan acceder a la misma información. Context les da acceso directo.
+- **Sin código de más:** A diferencia de Redux, Context no requiere configurar archivos complejos ni librerías extra, manteniendo la aplicación ligera y fácil de mantener para este alcance.
+- **Guardado automático:** Nos permite centralizar la lectura y escritura con `localStorage` en un solo lugar de forma limpia.
+
+### ¿Por qué usar 4 Categorías + Etiquetas (Tags)?
+
+Se optó por un sistema mixto para organizar las notas de forma intuitiva sin saturar al usuario:
+
+- **Categorías fijas:** Se definieron 4 grandes bloques (_Personal, Estudio, Trabajo, Ideas_). Cada nota pertenece a uno solo. Esto da una estructura base inmediata.
+- **Etiquetas libres:** Los tags (`#importante`, `#codigo`, `#parcial`) son libres y transversales. Sirven para dar profundidad y conectar notas de diferentes categorías.
+
+### Punto de conexión
+
+El estado de las notas, las categorías disponibles y los filtros activos (qué categoría o tag está haciendo clic el usuario) viven juntos dentro del mismo Context.
+
+Esto permite que, cuando el usuario escribe en el buscador o cambia de categoría en la barra lateral, la lista de notas se actualice en tiempo real cruzando ambos filtros de forma inmediata.
+
+---
 
 ## Funcionalidades
 
