@@ -53,7 +53,6 @@ La aplicación se abrirá en `http://localhost:5173`.
 | `npm run preview` | Previsualiza el build                     |
 | `npm run lint`    | Ejecuta ESLint                            |
 | `npm run test`    | Ejecuta la suite de pruebas               |
-| `npm run test`    | Ejecuta la suite de pruebas (Vitest/Jest) |
 
 ---
 
