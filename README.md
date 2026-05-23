@@ -7,7 +7,7 @@ Aplicación web de notas personales que permite crear, editar, eliminar y catego
 ## Stack Tecnológico
 
 - **React** para componentes y hooks
-- **Vite** para
+- **Vite** para build y dev server
 - **Material UI** y **CSS** para estilos
 - **Context API** para manejo de estado global
 - **localStorage** para persistencia de datos local
@@ -52,6 +52,7 @@ La aplicación se abrirá en `http://localhost:5173`.
 | `npm run build`   | Compila para producción                   |
 | `npm run preview` | Previsualiza el build                     |
 | `npm run lint`    | Ejecuta ESLint                            |
+| `npm run test`    | Ejecuta la suite de pruebas               |
 | `npm run test`    | Ejecuta la suite de pruebas (Vitest/Jest) |
 
 ---
@@ -60,57 +61,37 @@ La aplicación se abrirá en `http://localhost:5173`.
 
 ```bash
 src/
-├── assets/            # Imágenes, logos, estilos globales
-├── components/        # Componentes reutilizables de la UI
-│   ├── common/        #   Botones, Inputs, Modales
-│   └── layout/        #   Navbar, Sidebar (categorías)
+├── components/        # Componentes de la UI
+│   └── notes/         #   NoteCard, NoteForm, NotesList
 ├── context/           # Estado global de la app
-│   ├── AuthContext.jsx
-│   └── NotesContext.jsx
+│   ├── NotesProvider.jsx
+│   └── notesContext.js
 ├── hooks/             # Custom hooks
-│   ├── useAuth.js
 │   └── useNotes.js
-├── pages/             # Vistas principales
-│   ├── Login.jsx
-│   ├── Register.jsx
-│   ├── NotesDashboard.jsx
-│   └── NoteDetail.jsx
+├── mocks/             # Datos mock iniciales
+│   ├── categories.js
+│   └── initialNotes.js
 ├── services/          # Persistencia en localStorage
-│   └── storage.js
-├── utils/             # Validaciones y utilidades
-│   └── validators.js
-└── __tests__/         # Tests unitarios / de integración
+│   └── notesService.js
+├── views/             # Vistas principales
+│   └── Dashboard.jsx
+├── App.jsx
+└── main.jsx
 ```
 
 ---
 
 ## Modelo de datos
 
-### user o currentUser
-
-```json
-{
-  "id": "user-123",
-  "email": "alicia@dev.com",
-  "password": "password_mock"
-}
-```
-
-Campos y tipos de datos:
-
-- **id**: `string` (UUID único del usuario)
-- **email**: `string` (Correo electrónico del usuario)
-- **password**: `string` (Contraseña en texto plano — solo para mock local)
-
 ### note
 
 ```json
 {
   "id": "note-001",
-  "userId": "user-123",
   "title": "Ideas para el próximo deploy",
   "content": "Revisar las variables de entorno en Vercel.",
   "categoryId": "cat-work",
+  "tags": ["deploy", "backend"],
   "createdAt": "2026-05-20T23:00:00.000Z",
   "updatedAt": "2026-05-20T23:30:00.000Z"
 }
@@ -119,20 +100,20 @@ Campos y tipos de datos:
 Campos y tipos de datos:
 
 - **id**: `string` (UUID único de la nota)
-- **userId**: `string` (ID del usuario propietario, relación con `user.id`)
 - **title**: `string`
 - **content**: `string`
 - **categoryId**: `string | null` (Relación con `category.id`, opcional)
-- **createdAt**: `string` (Formato ISO 8601)
-- **updatedAt**: `string` (Formato ISO 8601)
+- **tags**: `string[]` (Etiquetas libres)
+- **createdAt**: `string` (Formato ISO 8601 — fecha de creación)
+- **updatedAt**: `string` (Formato ISO 8601 — fecha de última modificación)
 
 ### category
 
 ```json
 {
   "id": "cat-work",
-  "userId": "user-123",
   "name": "Trabajo",
+  "slug": "trabajo",
   "color": "#3f51b5"
 }
 ```
@@ -140,8 +121,8 @@ Campos y tipos de datos:
 Campos y tipos de datos:
 
 - **id**: `string` (UUID único de la categoría)
-- **userId**: `string` (ID del usuario propietario, relación con `user.id`)
-- **name**: `string` (Personal | Trabajo | Estudio | Ideas)
+- **name**: `string` (Personal | Estudio | Trabajo | Ideas)
+- **slug**: `string`
 - **color**: `string` (Código hexadecimal, ej. `#3f51b5`)
 
 ---
@@ -152,31 +133,24 @@ Campos y tipos de datos:
 
 Se eligió **Context API** porque es la herramienta nativa de React para compartir información entre componentes sin complicaciones.
 
-- **Evita pasar datos "mano en mano":** Componentes alejados como la barra lateral (filtros), el buscador y la lista de notas necesitan acceder a la misma información. Context les da acceso directo.
-- **Sin código de más:** A diferencia de Redux, Context no requiere configurar archivos complejos ni librerías extra, manteniendo la aplicación ligera y fácil de mantener para este alcance.
-- **Guardado automático:** Nos permite centralizar la lectura y escritura con `localStorage` en un solo lugar de forma limpia.
+- **Evita pasar datos "mano en mano"**: Componentes como el formulario y la lista de notas acceden al mismo estado sin prop drilling.
+- **Sin código de más**: A diferencia de Redux, Context no requiere configuración compleja ni librerías extra.
+- **Guardado automático**: Centraliza la lectura y escritura con `localStorage` de forma limpia.
 
 ### ¿Por qué usar 4 Categorías + Etiquetas (Tags)?
 
 Se optó por un sistema mixto para organizar las notas de forma intuitiva sin saturar al usuario:
 
-- **Categorías fijas:** Se definieron 4 grandes bloques (_Personal, Estudio, Trabajo, Ideas_). Cada nota pertenece a uno solo. Esto da una estructura base inmediata.
-- **Etiquetas libres:** Los tags (`#importante`, `#codigo`, `#parcial`) son libres y transversales. Sirven para dar profundidad y conectar notas de diferentes categorías.
-
-### Punto de conexión
-
-El estado de las notas, las categorías disponibles y los filtros activos (qué categoría o tag está haciendo clic el usuario) viven juntos dentro del mismo Context.
-
-Esto permite que, cuando el usuario escribe en el buscador o cambia de categoría en la barra lateral, la lista de notas se actualice en tiempo real cruzando ambos filtros de forma inmediata.
+- **Categorías fijas**: 4 bloques (_Personal, Estudio, Trabajo, Ideas_). Cada nota pertenece a una sola.
+- **Etiquetas libres**: Los tags (`#importante`, `#codigo`) son transversales y conectan notas de diferentes categorías.
 
 ---
 
 ## Funcionalidades
 
-- Registro e inicio de sesión de usuarios
 - CRUD completo de notas (crear, leer, actualizar, eliminar)
-- Asignación y filtrado de notas por categoría
-- Búsqueda de notas por título o contenido
-- Vista de lista y detalle de nota
-- Validaciones en formularios
+- Asignación de notas por categoría
+- Etiquetas (tags) libres por nota
+- Vista de lista de notas con preview
 - Persistencia local con localStorage
+- Datos mock iniciales al primer uso
