@@ -1,23 +1,21 @@
-import Grid from "@mui/material/Grid";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
 import NoteCard from "./NoteCard";
 
-export default function NotesList({ notes, categories, onEdit, onDelete, onClick }) {
+export default function NotesList({ notes, onClick }) {
+  if (notes.length === 0) {
+    return (
+      <Box sx={{ textAlign: "center", py: 8, color: "text.secondary" }}>
+        <Typography variant="body1">No hay notas en esta carpeta</Typography>
+      </Box>
+    );
+  }
+
   return (
-    <Grid container spacing={2}>
-      {notes.map((note) => {
-        const category = categories.find((c) => c.id === note.categoryId);
-        return (
-          <Grid key={note.id} size={{ xs: 12, sm: 6 }}>
-            <NoteCard
-              note={note}
-              category={category}
-              onEdit={onEdit}
-              onDelete={onDelete}
-              onClick={onClick}
-            />
-          </Grid>
-        );
-      })}
-    </Grid>
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
+      {notes.map((note) => (
+        <NoteCard key={note.id} note={note} onClick={onClick} />
+      ))}
+    </Box>
   );
 }

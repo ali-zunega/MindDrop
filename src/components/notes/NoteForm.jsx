@@ -14,20 +14,36 @@ export default function NoteForm({
   onSubmit,
   categories,
   initialData,
+  defaultCategoryId,
 }) {
   const [title, setTitle] = useState(initialData?.title || "");
   const [content, setContent] = useState(initialData?.content || "");
-  const [categoryId, setCategoryId] = useState(initialData?.categoryId || "");
+  const [categoryId, setCategoryId] = useState(
+    initialData?.categoryId ?? defaultCategoryId ?? "",
+  );
   const [tagInput, setTagInput] = useState("");
   const [tags, setTags] = useState(initialData?.tags || []);
+  const [errors, setErrors] = useState({});
 
   const isEditing = !!initialData;
 
+  const validate = () => {
+    const next = {};
+    if (!title.trim()) next.title = "El título es obligatorio";
+    if (!content.trim()) next.content = "El contenido es obligatorio";
+    else if (content.trim().length < 10)
+      next.content = "Debe tener al menos 10 caracteres";
+    setErrors(next);
+    return Object.keys(next).length === 0;
+  };
+
   const handleAddTag = (e) => {
-    if (e.key === "Enter" && tagInput.trim()) {
+    if (e.key === "Enter") {
       e.preventDefault();
-      setTags([...tags, tagInput.trim()]);
-      setTagInput("");
+      if (tagInput.trim()) {
+        setTags([...tags, tagInput.trim()]);
+        setTagInput("");
+      }
     }
   };
 
@@ -37,7 +53,7 @@ export default function NoteForm({
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!title.trim() || !content.trim()) return;
+    if (!validate()) return;
 
     onSubmit({
       ...(initialData && {
@@ -72,9 +88,14 @@ export default function NoteForm({
             name="title"
             label="Título"
             fullWidth
-            required
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={(e) => {
+              setTitle(e.target.value);
+              if (errors.title)
+                setErrors((prev) => ({ ...prev, title: undefined }));
+            }}
+            error={!!errors.title}
+            helperText={errors.title}
             sx={{ mb: 2 }}
             autoComplete="off"
           />
@@ -90,11 +111,16 @@ export default function NoteForm({
             }}
             autoComplete="off"
             fullWidth
-            required
             multiline
             rows={4}
             value={content}
-            onChange={(e) => setContent(e.target.value)}
+            onChange={(e) => {
+              setContent(e.target.value);
+              if (errors.content)
+                setErrors((prev) => ({ ...prev, content: undefined }));
+            }}
+            error={!!errors.content}
+            helperText={errors.content || `${content.length}/10 caracteres mínimos`}
             sx={{ mb: 2 }}
           />
 
