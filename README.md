@@ -46,13 +46,13 @@ La aplicación se abrirá en `http://localhost:5173`.
 
 ## Scripts
 
-| Comando           | Descripción                               |
-| ----------------- | ----------------------------------------- |
-| `npm run dev`     | Inicia el servidor de desarrollo          |
-| `npm run build`   | Compila para producción                   |
-| `npm run preview` | Previsualiza el build                     |
-| `npm run lint`    | Ejecuta ESLint                            |
-| `npm run test`    | Ejecuta la suite de pruebas               |
+| Comando           | Descripción                      |
+| ----------------- | -------------------------------- |
+| `npm run dev`     | Inicia el servidor de desarrollo |
+| `npm run build`   | Compila para producción          |
+| `npm run preview` | Previsualiza el build            |
+| `npm run lint`    | Ejecuta ESLint                   |
+| `npm run test`    | Ejecuta la suite de pruebas      |
 
 ---
 
@@ -102,7 +102,7 @@ Campos y tipos de datos:
 - **id**: `string` (UUID único de la nota)
 - **title**: `string`
 - **content**: `string`
-- **categoryId**: `string | null` (Relación con `category.id`, opcional)
+- **categoryId**: `string | null` (Relación con `category.id`)
 - **tags**: `string[]` (Etiquetas libres)
 - **createdAt**: `string` (Formato ISO 8601 — fecha de creación)
 - **updatedAt**: `string` (Formato ISO 8601 — fecha de última modificación)

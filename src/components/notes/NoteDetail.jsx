@@ -44,6 +44,7 @@ export default function NoteDetail({ note, onBack, onEdit, onDelete }) {
             overflow: "hidden",
             textOverflow: "ellipsis",
             whiteSpace: "nowrap",
+            flex: 1,
           }}
         >
           {note.title}
@@ -66,12 +67,17 @@ export default function NoteDetail({ note, onBack, onEdit, onDelete }) {
           ))}
         </Box>
       )}
-
-      <Typography variant="caption" color="text.disabled" display="block">
+      <Divider sx={{ mb: 2 }} />
+      <Typography
+        variant="caption"
+        color="text.disabled"
+        component="p"
+        sx={{ mb: 0.5 }}
+      >
         Creada el {createdDate}
       </Typography>
       {showBoth && (
-        <Typography variant="caption" color="text.disabled" display="block">
+        <Typography variant="caption" color="text.disabled" component="p">
           Última modificación el {updatedDate}
         </Typography>
       )}
