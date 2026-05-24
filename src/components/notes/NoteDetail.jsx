@@ -1,17 +1,14 @@
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import DialogActions from "@mui/material/DialogActions";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
+import Divider from "@mui/material/Divider";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import CloseIcon from "@mui/icons-material/Close";
 
-export default function NoteDetail({ open, note, category, onEdit, onDelete, onClose }) {
+export default function NoteDetail({ note, onBack, onEdit, onDelete }) {
   if (!note) return null;
 
   const formatDate = (iso) =>
@@ -28,69 +25,70 @@ export default function NoteDetail({ open, note, category, onEdit, onDelete, onC
   const showBoth = updatedDate && note.createdAt !== note.updatedAt;
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle sx={{ fontWeight: 700, pr: 6 }}>
-        {note.title}
-        <IconButton
-          onClick={onClose}
-          sx={{ position: "absolute", right: 8, top: 8 }}
-          size="small"
-        >
-          <CloseIcon />
+    <>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: 0.5,
+          mb: 3,
+        }}
+      >
+        <IconButton onClick={onBack} aria-label="Volver">
+          <ArrowBackIcon />
         </IconButton>
-      </DialogTitle>
-
-      <DialogContent dividers>
-        <Typography variant="body1" sx={{ whiteSpace: "pre-wrap", mb: 3 }}>
-          {note.content}
+        <Typography
+          variant="h6"
+          sx={{
+            fontWeight: 700,
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+          }}
+        >
+          {note.title}
         </Typography>
+      </Box>
 
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5, mb: 2 }}>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <Typography variant="body2" sx={{ fontWeight: 600, minWidth: 80 }}>
-              Categoría:
-            </Typography>
-            <Chip
-              label={category?.name ?? "Sin categoría"}
-              size="small"
-              sx={{
-                backgroundColor: category?.color ?? "grey.400",
-                color: "common.white",
-                fontWeight: 500,
-              }}
-            />
-          </Box>
+      <Divider sx={{ mb: 3 }} />
 
-          {note.tags?.length > 0 && (
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              <Typography variant="body2" sx={{ fontWeight: 600, minWidth: 80 }}>
-                Tags:
-              </Typography>
-              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                {note.tags.map((tag) => (
-                  <Chip key={tag} label={`#${tag}`} size="small" variant="outlined" />
-                ))}
-              </Box>
-            </Box>
-          )}
+      <Typography
+        variant="body1"
+        sx={{ whiteSpace: "pre-wrap", mb: 3, lineHeight: 1.7 }}
+      >
+        {note.content}
+      </Typography>
+
+      {note.tags?.length > 0 && (
+        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5, mb: 3 }}>
+          {note.tags.map((tag) => (
+            <Chip key={tag} label={`#${tag}`} variant="outlined" />
+          ))}
         </Box>
+      )}
 
+      <Typography variant="caption" color="text.disabled" display="block">
+        Creada el {createdDate}
+      </Typography>
+      {showBoth && (
         <Typography variant="caption" color="text.disabled" display="block">
-          Creada el {createdDate}
+          Última modificación el {updatedDate}
         </Typography>
-        {showBoth && (
-          <Typography variant="caption" color="text.disabled" display="block">
-            Última modificación el {updatedDate}
-          </Typography>
-        )}
-      </DialogContent>
+      )}
 
-      <DialogActions sx={{ px: 3, py: 2 }}>
+      <Box
+        sx={{
+          display: "flex",
+          gap: 1.5,
+          mt: 4,
+          flexDirection: { xs: "column", sm: "row" },
+        }}
+      >
         <Button
           variant="contained"
           startIcon={<EditIcon />}
           onClick={() => onEdit(note)}
-          sx={{ textTransform: "none", fontWeight: 600 }}
+          sx={{ textTransform: "none", fontWeight: 600, flex: 1 }}
         >
           Editar
         </Button>
@@ -99,11 +97,11 @@ export default function NoteDetail({ open, note, category, onEdit, onDelete, onC
           color="error"
           startIcon={<DeleteIcon />}
           onClick={() => onDelete(note)}
-          sx={{ textTransform: "none", fontWeight: 600 }}
+          sx={{ textTransform: "none", fontWeight: 600, flex: 1 }}
         >
           Eliminar
         </Button>
-      </DialogActions>
-    </Dialog>
+      </Box>
+    </>
   );
 }

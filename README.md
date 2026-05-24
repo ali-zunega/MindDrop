@@ -61,7 +61,8 @@ La aplicación se abrirá en `http://localhost:5173`.
 ```bash
 src/
 ├── components/        # Componentes de la UI
-│   └── notes/         #   NoteCard, NoteForm, NotesList
+│   ├── folders/       #   FolderCard, FolderList
+│   └── notes/         #   NoteCard, NoteForm, NoteDetail, NotesList
 ├── context/           # Estado global de la app
 │   ├── NotesProvider.jsx
 │   └── notesContext.js
@@ -113,7 +114,8 @@ Campos y tipos de datos:
   "id": "cat-work",
   "name": "Trabajo",
   "slug": "trabajo",
-  "color": "#3f51b5"
+  "color": "#3f51b5",
+  "icon": "briefcase"
 }
 ```
 
@@ -123,6 +125,7 @@ Campos y tipos de datos:
 - **name**: `string` (Personal | Estudio | Trabajo | Ideas)
 - **slug**: `string`
 - **color**: `string` (Código hexadecimal, ej. `#3f51b5`)
+- **icon**: `string` (user | book | briefcase | lightbulb | folder)
 
 ---
 
@@ -136,20 +139,23 @@ Se eligió **Context API** porque es la herramienta nativa de React para compart
 - **Sin código de más**: A diferencia de Redux, Context no requiere configuración compleja ni librerías extra.
 - **Guardado automático**: Centraliza la lectura y escritura con `localStorage` de forma limpia.
 
-### ¿Por qué usar 4 Categorías + Etiquetas (Tags)?
+### ¿Por qué usar Carpetas + Etiquetas (Tags)?
 
 Se optó por un sistema mixto para organizar las notas de forma intuitiva sin saturar al usuario:
 
-- **Categorías fijas**: 4 bloques (_Personal, Estudio, Trabajo, Ideas_). Cada nota pertenece a una sola.
-- **Etiquetas libres**: Los tags (`#importante`, `#codigo`) son transversales y conectan notas de diferentes categorías.
+- **Carpetas por categoría**: 4 bloques (_Personal, Estudio, Trabajo, Ideas_) más una carpeta virtual _Sin categoría_. Cada nota pertenece a una sola y se accede a través de la navegación por carpetas.
+- **Etiquetas libres**: Los tags (`#importante`, `#codigo`) son transversales y conectan notas de diferentes carpetas.
 
 ---
 
 ## Funcionalidades
 
 - CRUD completo de notas (crear, leer, actualizar, eliminar)
-- Asignación de notas por categoría
+- Navegación por carpetas con categorías fijas (Personal, Estudio, Trabajo, Ideas)
 - Etiquetas (tags) libres por nota
-- Vista de lista de notas con preview
+- Vista de lista con preview: título, tags y fecha de creación/modificación
+- Vista detalle con contenido completo, tags, fechas y botones editar/eliminar
+- Sidebar con carpetas en desktop para navegación persistente
+- Mobile-first con diseño responsive y FAB
 - Persistencia local con localStorage
 - Datos mock iniciales al primer uso
