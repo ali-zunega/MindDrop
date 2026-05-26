@@ -7,21 +7,13 @@ import Divider from "@mui/material/Divider";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { formatDateLong } from "../../utils/formatters";
 
 export default function NoteDetail({ note, onBack, onEdit, onDelete }) {
   if (!note) return null;
 
-  const formatDate = (iso) =>
-    new Date(iso).toLocaleDateString("es-AR", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-
-  const createdDate = formatDate(note.createdAt);
-  const updatedDate = note.updatedAt ? formatDate(note.updatedAt) : null;
+  const createdDate = formatDateLong(note.createdAt);
+  const updatedDate = note.updatedAt ? formatDateLong(note.updatedAt) : null;
   const showBoth = updatedDate && note.createdAt !== note.updatedAt;
 
   return (

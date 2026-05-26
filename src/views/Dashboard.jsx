@@ -19,6 +19,8 @@ import Divider from "@mui/material/Divider";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import NoteAddIcon from "@mui/icons-material/NoteAdd";
 import LogoutIcon from "@mui/icons-material/Logout";
+import SearchBar from "../components/notes/SearchBar";
+import { getInitial } from "../utils/formatters";
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
@@ -29,6 +31,7 @@ export default function Dashboard() {
   const [editingNote, setEditingNote] = useState(null);
   const [deletingNote, setDeletingNote] = useState(null);
   const [detailNote, setDetailNote] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const folderList = useMemo(() => {
     const mapped = CATEGORIES.map((cat) => ({
@@ -54,12 +57,18 @@ export default function Dashboard() {
   const filteredNotes = useMemo(
     () =>
       notes.filter((n) => {
-        if (selectedFolder?.id === null) {
-          return !n.categoryId || n.categoryId === "";
-        }
-        return n.categoryId === selectedFolder?.id;
+        const matchesFolder =
+          selectedFolder?.id === null
+            ? !n.categoryId || n.categoryId === ""
+            : n.categoryId === selectedFolder?.id;
+        const q = searchQuery.toLowerCase().trim();
+        const matchesSearch =
+          !q ||
+          n.title.toLowerCase().includes(q) ||
+          n.content.toLowerCase().includes(q);
+        return matchesFolder && matchesSearch;
       }),
-    [notes, selectedFolder],
+    [notes, selectedFolder, searchQuery],
   );
 
   const handleCreateNote = () => {
@@ -170,7 +179,7 @@ export default function Dashboard() {
               fontWeight: 600,
             }}
           >
-            {user.name.charAt(0).toUpperCase()}
+            {getInitial(user.name)}
           </Avatar>
           <Typography variant="body2" noWrap sx={{ fontWeight: 500 }}>
             {user.name}
@@ -242,7 +251,7 @@ export default function Dashboard() {
               fontWeight: 600,
             }}
           >
-            {user.name.charAt(0).toUpperCase()}
+            {getInitial(user.name)}
           </Avatar>
           {!formOpen && (
             <Button
@@ -320,7 +329,12 @@ export default function Dashboard() {
         )}
 
         {view === "notes" && (
-          <NotesList notes={filteredNotes} onClick={handleNoteClick} />
+          <>
+            <SearchBar value={searchQuery} onChange={setSearchQuery} />
+            <Box sx={{ mt: 2 }}>
+              <NotesList notes={filteredNotes} onClick={handleNoteClick} searchQuery={searchQuery} />
+            </Box>
+          </>
         )}
 
         {view === "detail" && (
@@ -375,10 +389,15 @@ export default function Dashboard() {
 
           {view === "notes" && (
             <>
-              <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
-                {selectedFolder?.name || "Notas"}
-              </Typography>
-              <NotesList notes={filteredNotes} onClick={handleNoteClick} />
+              <Stack direction="row" sx={{ alignItems: "center", justifyContent: "space-between", mb: 2 }}>
+                <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                  {selectedFolder?.name || "Notas"}
+                </Typography>
+                <Box sx={{ width: 260 }}>
+                  <SearchBar value={searchQuery} onChange={setSearchQuery} />
+                </Box>
+              </Stack>
+              <NotesList notes={filteredNotes} onClick={handleNoteClick} searchQuery={searchQuery} />
             </>
           )}
 

@@ -3,16 +3,11 @@ import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import Chip from "@mui/material/Chip";
 import Box from "@mui/material/Box";
+import { formatDate } from "../../utils/formatters";
 
 export default function NoteCard({ note, onClick }) {
   const wasModified = note.updatedAt && note.updatedAt !== note.createdAt;
-  const displayDate = new Date(
-    wasModified ? note.updatedAt : note.createdAt
-  ).toLocaleDateString("es-AR", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
+  const displayDate = formatDate(wasModified ? note.updatedAt : note.createdAt);
 
   return (
     <Card
