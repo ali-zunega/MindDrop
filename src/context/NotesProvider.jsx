@@ -1,14 +1,19 @@
 import { useState, useEffect } from "react";
+import { useAuth } from "../hooks/useAuth";
 import { INITIAL_NOTES } from "../mocks/initialNotes";
 import { NotesContext } from "./notesContext";
 import { loadNotes, saveNotes } from "../services/notesService";
 
 export function NotesProvider({ children }) {
-  const [notes, setNotes] = useState(() => loadNotes(INITIAL_NOTES));
+  const { user } = useAuth();
+  const [notes, setNotes] = useState(() => {
+    const isSeed = user.id === "user-1";
+    return loadNotes(user.id, isSeed ? INITIAL_NOTES : []);
+  });
 
   useEffect(() => {
-    saveNotes(notes);
-  }, [notes]);
+    if (user) saveNotes(user.id, notes);
+  }, [notes, user]);
 
   const addNote = (noteData) => {
     const now = new Date().toISOString();
