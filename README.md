@@ -10,7 +10,7 @@ Aplicación web de notas personales que permite crear, editar, eliminar y catego
 - **Vite** para build y dev server
 - **Material UI** y **CSS** para estilos
 - **Context API** para manejo de estado global
-- **localStorage** para persistencia de datos local
+- **localStorage** para persistencia de datos local y sesión de usuario
 
 ---
 
@@ -61,27 +61,68 @@ La aplicación se abrirá en `http://localhost:5173`.
 ```bash
 src/
 ├── components/        # Componentes de la UI
+│   ├── auth/          #   LoginForm, RegisterForm
 │   ├── folders/       #   FolderCard, FolderList
-│   └── notes/         #   NoteCard, NoteForm, NoteDetail, NotesList
+│   └── notes/         #   NoteCard, NoteForm, NoteDetail, NotesList, DeleteConfirmDialog
 ├── context/           # Estado global de la app
+│   ├── AuthProvider.jsx
+│   ├── authContext.js
 │   ├── NotesProvider.jsx
 │   └── notesContext.js
 ├── hooks/             # Custom hooks
+│   ├── useAuth.js
 │   └── useNotes.js
 ├── mocks/             # Datos mock iniciales
 │   ├── categories.js
-│   └── initialNotes.js
+│   ├── initialNotes.js
+│   └── users.js
 ├── services/          # Persistencia en localStorage
+│   ├── authService.js
 │   └── notesService.js
 ├── views/             # Vistas principales
-│   └── Dashboard.jsx
+│   ├── Dashboard.jsx
+│   ├── Login.jsx
+│   └── Register.jsx
 ├── App.jsx
 └── main.jsx
 ```
 
 ---
 
+## Funcionalidades
+
+- Autenticación de usuarios (registro, inicio y cierre de sesión)
+- CRUD completo de notas (crear, leer, actualizar, eliminar)
+- Navegación por carpetas con categorías fijas (Personal, Estudio, Trabajo, Ideas)
+- Etiquetas (tags) libres por nota
+- Vista de lista con preview: título, tags y fecha de creación/modificación
+- Vista detalle con contenido completo, tags, fechas y botones editar/eliminar
+- Sidebar con carpetas en desktop para navegación persistente
+- Mobile-first con diseño responsive y FAB
+- Persistencia local con localStorage
+- Datos mock iniciales al primer uso
+
+---
+
 ## Modelo de datos
+
+### user
+
+```json
+{
+  "id": "user-1",
+  "name": "Alita Ejemplo",
+  "email": "ali@minddrop.com",
+  "password": "123456"
+}
+```
+
+Campos y tipos de datos:
+
+- **id**: `string` (UUID único del usuario)
+- **name**: `string`
+- **email**: `string`
+- **password**: `string` (sin hashing — demo)
 
 ### note
 
@@ -146,16 +187,4 @@ Se optó por un sistema mixto para organizar las notas de forma intuitiva sin sa
 - **Carpetas por categoría**: 4 bloques (_Personal, Estudio, Trabajo, Ideas_) más una carpeta virtual _Sin categoría_. Cada nota pertenece a una sola y se accede a través de la navegación por carpetas.
 - **Etiquetas libres**: Los tags (`#importante`, `#codigo`) son transversales y conectan notas de diferentes carpetas.
 
----
 
-## Funcionalidades
-
-- CRUD completo de notas (crear, leer, actualizar, eliminar)
-- Navegación por carpetas con categorías fijas (Personal, Estudio, Trabajo, Ideas)
-- Etiquetas (tags) libres por nota
-- Vista de lista con preview: título, tags y fecha de creación/modificación
-- Vista detalle con contenido completo, tags, fechas y botones editar/eliminar
-- Sidebar con carpetas en desktop para navegación persistente
-- Mobile-first con diseño responsive y FAB
-- Persistencia local con localStorage
-- Datos mock iniciales al primer uso

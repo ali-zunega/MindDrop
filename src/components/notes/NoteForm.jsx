@@ -105,10 +105,6 @@ export default function NoteForm({
             id="content"
             name="content"
             label="Contenido"
-            inputprops={{
-              id: "content",
-              name: "content",
-            }}
             autoComplete="off"
             fullWidth
             multiline
@@ -120,7 +116,9 @@ export default function NoteForm({
                 setErrors((prev) => ({ ...prev, content: undefined }));
             }}
             error={!!errors.content}
-            helperText={errors.content || `${content.length}/10 caracteres mínimos`}
+            helperText={
+              errors.content || `${content.length}/10 caracteres mínimos`
+            }
             sx={{ mb: 2 }}
           />
 
