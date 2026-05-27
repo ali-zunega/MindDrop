@@ -4,6 +4,7 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
+import { isValidEmail, minLength } from "../../utils/validators";
 
 export default function RegisterForm() {
   const { register } = useAuth();
@@ -12,8 +13,6 @@ export default function RegisterForm() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
-
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -24,17 +23,17 @@ export default function RegisterForm() {
       return;
     }
 
-    if (name.trim().length < 2) {
+    if (!minLength(name, 2)) {
       setError("El nombre debe tener al menos 2 caracteres");
       return;
     }
 
-    if (!emailRegex.test(email)) {
+    if (!isValidEmail(email)) {
       setError("Ingresá un email válido");
       return;
     }
 
-    if (password.length < 6) {
+    if (!minLength(password, 6)) {
       setError("La contraseña debe tener al menos 6 caracteres");
       return;
     }
