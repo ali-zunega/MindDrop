@@ -8,6 +8,7 @@ import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
+import { validateNoteForm } from "../../utils/validators";
 
 export default function NoteForm({
   onClose,
@@ -28,11 +29,7 @@ export default function NoteForm({
   const isEditing = !!initialData;
 
   const validate = () => {
-    const next = {};
-    if (!title.trim()) next.title = "El título es obligatorio";
-    if (!content.trim()) next.content = "El contenido es obligatorio";
-    else if (content.trim().length < 10)
-      next.content = "Debe tener al menos 10 caracteres";
+    const next = validateNoteForm({ title, content });
     setErrors(next);
     return Object.keys(next).length === 0;
   };

@@ -4,14 +4,13 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
+import { isValidEmail } from "../../utils/validators";
 
 export default function LoginForm() {
   const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -22,7 +21,7 @@ export default function LoginForm() {
       return;
     }
 
-    if (!emailRegex.test(email)) {
+    if (!isValidEmail(email)) {
       setError("Ingresá un email válido");
       return;
     }

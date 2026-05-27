@@ -63,7 +63,7 @@ src/
 ├── components/        # Componentes de la UI
 │   ├── auth/          #   LoginForm, RegisterForm
 │   ├── folders/       #   FolderCard, FolderList
-│   └── notes/         #   NoteCard, NoteForm, NoteDetail, NotesList, DeleteConfirmDialog
+│   └── notes/         #   NoteCard, NoteForm, NoteDetail, NotesList, SearchBar, DeleteConfirmDialog
 ├── context/           # Estado global de la app
 │   ├── AuthProvider.jsx
 │   ├── authContext.js
@@ -79,6 +79,9 @@ src/
 ├── services/          # Persistencia en localStorage
 │   ├── authService.js
 │   └── notesService.js
+├── utils/             # Utilidades compartidas
+│   ├── formatters.js  #   formatDate, formatDateLong, getInitial
+│   └── validators.js  #   isValidEmail, minLength, validateNoteForm
 ├── views/             # Vistas principales
 │   ├── Dashboard.jsx
 │   ├── Login.jsx
@@ -93,7 +96,8 @@ src/
 
 - Autenticación de usuarios (registro, inicio y cierre de sesión)
 - CRUD completo de notas (crear, leer, actualizar, eliminar)
-- Navegación por carpetas con categorías fijas (Personal, Estudio, Trabajo, Ideas)
+- Navegación por carpetas con categorías fijas (Personal, Estudio, Trabajo, Ideas) y filtro por categoría
+- Búsqueda de notas por título y contenido
 - Etiquetas (tags) libres por nota
 - Vista de lista con preview: título, tags y fecha de creación/modificación
 - Vista detalle con contenido completo, tags, fechas y botones editar/eliminar
@@ -170,7 +174,7 @@ Campos y tipos de datos:
 
 ---
 
-## 📌 Decisiones de Diseño
+## Decisiones de Diseño
 
 ### ¿Por qué usamos Context API?
 
