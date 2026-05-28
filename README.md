@@ -10,6 +10,7 @@ Aplicación web de notas personales que permite crear, editar, eliminar y catego
 - **Vite** para build y dev server
 - **Material UI** y **CSS** para estilos
 - **Context API** para manejo de estado global
+- **Vitest + React Testing Library** para tests unitarios y de integración
 - **localStorage** para persistencia de datos local y sesión de usuario
 
 ---
@@ -46,13 +47,14 @@ La aplicación se abrirá en `http://localhost:5173`.
 
 ## Scripts
 
-| Comando           | Descripción                      |
-| ----------------- | -------------------------------- |
-| `npm run dev`     | Inicia el servidor de desarrollo |
-| `npm run build`   | Compila para producción          |
-| `npm run preview` | Previsualiza el build            |
-| `npm run lint`    | Ejecuta ESLint                   |
-| `npm run test`    | Ejecuta la suite de pruebas      |
+| Comando              | Descripción                           |
+| -------------------- | ------------------------------------- |
+| `npm run dev`        | Inicia el servidor de desarrollo      |
+| `npm run build`      | Compila para producción               |
+| `npm run preview`    | Previsualiza el build                 |
+| `npm run lint`       | Ejecuta ESLint                        |
+| `npm run test`       | Ejecuta la suite de pruebas (una vez) |
+| `npm run test:watch` | Ejecuta los tests en modo watch       |
 
 ---
 
@@ -60,6 +62,13 @@ La aplicación se abrirá en `http://localhost:5173`.
 
 ```bash
 src/
+├── __tests__/         # Tests
+│   ├── setup.js
+│   ├── components/
+│   │   ├── auth/      #   LoginForm.test.jsx, RegisterForm.test.jsx
+│   │   └── notes/     #   NoteForm.test.jsx, NoteCard.test.jsx
+│   ├── services/      #   authService.test.js, notesService.test.js
+│   └── utils/         #   validators.test.js, formatters.test.js
 ├── components/        # Componentes de la UI
 │   ├── auth/          #   LoginForm, RegisterForm
 │   ├── folders/       #   FolderCard, FolderList
@@ -174,6 +183,56 @@ Campos y tipos de datos:
 
 ---
 
+## Tests
+
+El proyecto usa **Vitest** con **React Testing Library** y **jsdom** para pruebas unitarias y de integración.
+
+### Stack de testing
+
+- **Vitest** — corredor de tests (compatible con Vite)
+- **@testing-library/react** — renderizado de componentes en entorno simulado
+- **@testing-library/user-event** — interacciones realistas (click, type, etc.)
+- **@testing-library/jest-dom** — matchers adicionales (`toBeInTheDocument`, `toHaveTextContent`, etc.)
+- **jsdom** — entorno DOM simulado para Node.js
+
+### Tests incluidos
+
+| Archivo                                 | Tipo        | Qué verifica                                                                        |
+| --------------------------------------- | ----------- | ----------------------------------------------------------------------------------- |
+| `services/authService.test.js`          | Unitario    | login, register, logout, initUsers, sesión en localStorage                          |
+| `services/notesService.test.js`         | Unitario    | loadNotes con/sin datos, migración de clave antigua, saveNotes                      |
+| `utils/validators.test.js`              | Unitario    | isValidEmail, minLength, validateRequired, validateNoteForm                         |
+| `utils/formatters.test.js`              | Unitario    | formatDate, formatDateLong, getInitial, nowISO                                      |
+| `components/auth/LoginForm.test.jsx`    | Integración | render, validaciones vacío/email inválido, submit exitoso, error del contexto       |
+| `components/auth/RegisterForm.test.jsx` | Integración | render, validaciones (nombre corto, email, contraseña, confirmación), submit, error |
+| `components/notes/NoteForm.test.jsx`    | Integración | render, validaciones título/contenido, submit, pre-fill en edición                  |
+| `components/notes/NoteCard.test.jsx`    | Render      | título, tags, fechas, clic, sin tags                                                |
+
+---
+
+### Ejecutar tests
+
+```bash
+# Una vez (modo CI)
+npm run test
+
+# Modo watch (se re-ejecutan al cambiar archivos)
+npm run test:watch
+```
+
+<img src="./public/screenshots/tests_minddrop.png" alt="Tests ejecutados" width="500">
+
+---
+
+### Screenshots
+
+| Vista                  | Preview                                                         |
+| ---------------------- | --------------------------------------------------------------- |
+| Inicio de sesión       | <img src="./public/screenshots/login.png" alt="Login" width="500">              |
+| Dashboard con carpetas | <img src="./public/screenshots/desktop-folder.png" alt="Dashboard" width="500"> |
+
+---
+
 ## Decisiones de Diseño
 
 ### ¿Por qué usamos Context API?
@@ -190,5 +249,3 @@ Se optó por un sistema mixto para organizar las notas de forma intuitiva sin sa
 
 - **Carpetas por categoría**: 4 bloques (_Personal, Estudio, Trabajo, Ideas_) más una carpeta virtual _Sin categoría_. Cada nota pertenece a una sola y se accede a través de la navegación por carpetas.
 - **Etiquetas libres**: Los tags (`#importante`, `#codigo`) son transversales y conectan notas de diferentes carpetas.
-
-
