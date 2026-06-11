@@ -2,7 +2,9 @@
 
 Aplicación web de notas personales que permite crear, editar, eliminar y categorizar notas con una interfaz intuitiva y organizada.
 
----
+## **Despliegue en producción:**
+
+[![Desplegado en Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://mind-drop-alizunegas-projects.vercel.app/)
 
 ## Stack Tecnológico
 
