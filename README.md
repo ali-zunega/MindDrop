@@ -244,10 +244,13 @@ npm run test:watch
 
 ### Screenshots
 
-| Vista                  | Preview                                                                         |
-| ---------------------- | ------------------------------------------------------------------------------- |
-| Inicio de sesión       | <img src="./public/screenshots/login.png" alt="Login" width="500">              |
-| Dashboard con carpetas | <img src="./public/screenshots/desktop-folder.png" alt="Dashboard" width="500"> |
+| Vista                        | Preview                                                                                             |
+| ---------------------------- | --------------------------------------------------------------------------------------------------- |
+| Inicio de sesión             | <img src="./public/screenshots/login.png" alt="Login" width="500">                                  |
+| Inicio de sesión (dark-mode) | <img src="./public/screenshots/login_darkmode.png" alt="Inicio de sesión en dark mode" width="500"> |
+| Dashboard con carpetas       | <img src="./public/screenshots/desktop-folder.png" alt="Dashboard" width="500">                     |
+| Daskboard DarkMode           | <img src="./public/screenshots/desktop_darkmode.png" alt="Dashboard en Dark Mode" width="500">      |
+| Dashboard Tablet             | <img src="./public/screenshots/tablet_darkmode.png" alt="Dashboard Tablet Dark Mode" width="500">   |
 
 ---
 
