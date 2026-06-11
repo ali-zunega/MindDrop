@@ -26,6 +26,9 @@ export default function Login({ onSwitch }) {
           <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.5 }}>
             MindDrop
           </Typography>
+          <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
+            Organiza tus notas e ideas en un solo lugar
+          </Typography>
           <Typography variant="body2" color="text.secondary">
             Iniciá sesión para continuar
           </Typography>

@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { useNotes } from "../hooks/useNotes";
+import { useTheme } from "../hooks/useTheme";
 import { CATEGORIES } from "../mocks/categories";
 import FolderList from "../components/folders/FolderList";
 import NotesList from "../components/notes/NotesList";
@@ -19,12 +20,15 @@ import Divider from "@mui/material/Divider";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import NoteAddIcon from "@mui/icons-material/NoteAdd";
 import LogoutIcon from "@mui/icons-material/Logout";
+import DarkModeIcon from "@mui/icons-material/DarkMode";
+import LightModeIcon from "@mui/icons-material/LightMode";
 import SearchBar from "../components/notes/SearchBar";
 import { getInitial } from "../utils/formatters";
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
   const { notes, addNote, updateNote, deleteNote } = useNotes();
+  const { theme, toggleTheme } = useTheme();
   const [view, setView] = useState("folders");
   const [selectedFolder, setSelectedFolder] = useState(null);
   const [formOpen, setFormOpen] = useState(false);
@@ -271,9 +275,17 @@ export default function Dashboard() {
           )}
           <IconButton
             size="small"
+            onClick={toggleTheme}
+            title={theme === "dark" ? "Modo claro" : "Modo oscuro"}
+            sx={{ display: { xs: "flex", md: "none" } }}
+          >
+            {theme === "dark" ? <LightModeIcon fontSize="small" /> : <DarkModeIcon fontSize="small" />}
+          </IconButton>
+          <IconButton
+            size="small"
             onClick={logout}
             title="Cerrar sesión"
-            sx={{ display: { xs: "flex", sm: "none" } }}
+            sx={{ display: { xs: "flex", md: "none" } }}
           >
             <LogoutIcon fontSize="small" />
           </IconButton>
@@ -316,6 +328,13 @@ export default function Dashboard() {
           >
             Nueva nota
           </Button>
+          <IconButton
+            size="small"
+            onClick={toggleTheme}
+            title={theme === "dark" ? "Modo claro" : "Modo oscuro"}
+          >
+            {theme === "dark" ? <LightModeIcon /> : <DarkModeIcon />}
+          </IconButton>
           <IconButton size="small" onClick={logout} title="Cerrar sesión">
             <LogoutIcon />
           </IconButton>
