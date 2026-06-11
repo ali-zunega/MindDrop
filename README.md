@@ -10,7 +10,7 @@ Aplicación web de notas personales que permite crear, editar, eliminar y catego
 
 - **React** para componentes y hooks
 - **Vite** para build y dev server
-- **Material UI** y **CSS** para estilos
+- **Material UI** para estilos (sistema de temas con modo oscuro/claro)
 - **Context API** para manejo de estado global
 - **Vitest + React Testing Library** para tests unitarios y de integración
 - **localStorage** para persistencia de datos local y sesión de usuario
@@ -45,6 +45,13 @@ npm run dev
 
 La aplicación se abrirá en `http://localhost:5173`.
 
+### Usuario de prueba
+
+| Campo      | Valor            |
+| ---------- | ---------------- |
+| Email      | ali@minddrop.com |
+| Contraseña | 123456           |
+
 ---
 
 ## Scripts
@@ -69,7 +76,8 @@ src/
 │   ├── components/
 │   │   ├── auth/      #   LoginForm.test.jsx, RegisterForm.test.jsx
 │   │   └── notes/     #   NoteForm.test.jsx, NoteCard.test.jsx
-│   ├── services/      #   authService.test.js, notesService.test.js
+│   ├── context/       #   ThemeProvider.test.jsx
+│   ├── services/      #   authService.test.js, notesService.test.js, themeService.test.js
 │   └── utils/         #   validators.test.js, formatters.test.js
 ├── components/        # Componentes de la UI
 │   ├── auth/          #   LoginForm, RegisterForm
@@ -79,17 +87,21 @@ src/
 │   ├── AuthProvider.jsx
 │   ├── authContext.js
 │   ├── NotesProvider.jsx
-│   └── notesContext.js
+│   ├── notesContext.js
+│   ├── ThemeProvider.jsx
+│   └── themeContext.js
 ├── hooks/             # Custom hooks
 │   ├── useAuth.js
-│   └── useNotes.js
+│   ├── useNotes.js
+│   └── useTheme.js
 ├── mocks/             # Datos mock iniciales
 │   ├── categories.js
 │   ├── initialNotes.js
 │   └── users.js
 ├── services/          # Persistencia en localStorage
 │   ├── authService.js
-│   └── notesService.js
+│   ├── notesService.js
+│   └── themeService.js
 ├── utils/             # Utilidades compartidas
 │   ├── formatters.js  #   formatDate, formatDateLong, getInitial
 │   └── validators.js  #   isValidEmail, minLength, validateNoteForm
@@ -114,6 +126,8 @@ src/
 - Vista detalle con contenido completo, tags, fechas y botones editar/eliminar
 - Sidebar con carpetas en desktop para navegación persistente
 - Mobile-first con diseño responsive y FAB
+- Toggle de tema oscuro/claro con detección de preferencia del sistema (`prefers-color-scheme`)
+- Persistencia de preferencia de tema en localStorage
 - Persistencia local con localStorage
 - Datos mock iniciales al primer uso
 
@@ -199,16 +213,18 @@ El proyecto usa **Vitest** con **React Testing Library** y **jsdom** para prueba
 
 ### Tests incluidos
 
-| Archivo                                 | Tipo        | Qué verifica                                                                        |
-| --------------------------------------- | ----------- | ----------------------------------------------------------------------------------- |
-| `services/authService.test.js`          | Unitario    | login, register, logout, initUsers, sesión en localStorage                          |
-| `services/notesService.test.js`         | Unitario    | loadNotes con/sin datos, migración de clave antigua, saveNotes                      |
-| `utils/validators.test.js`              | Unitario    | isValidEmail, minLength, validateRequired, validateNoteForm                         |
-| `utils/formatters.test.js`              | Unitario    | formatDate, formatDateLong, getInitial, nowISO                                      |
-| `components/auth/LoginForm.test.jsx`    | Integración | render, validaciones vacío/email inválido, submit exitoso, error del contexto       |
-| `components/auth/RegisterForm.test.jsx` | Integración | render, validaciones (nombre corto, email, contraseña, confirmación), submit, error |
-| `components/notes/NoteForm.test.jsx`    | Integración | render, validaciones título/contenido, submit, pre-fill en edición                  |
-| `components/notes/NoteCard.test.jsx`    | Render      | título, tags, fechas, clic, sin tags                                                |
+| Archivo                                 | Tipo        | Qué verifica                                                                                  |
+| --------------------------------------- | ----------- | --------------------------------------------------------------------------------------------- |
+| `services/authService.test.js`          | Unitario    | login, register, logout, initUsers, sesión en localStorage                                    |
+| `services/notesService.test.js`         | Unitario    | loadNotes con/sin datos, migración de clave antigua, saveNotes                                |
+| `utils/validators.test.js`              | Unitario    | isValidEmail, minLength, validateRequired, validateNoteForm                                   |
+| `utils/formatters.test.js`              | Unitario    | formatDate, formatDateLong, getInitial, nowISO                                                |
+| `components/auth/LoginForm.test.jsx`    | Integración | render, validaciones vacío/email inválido, submit exitoso, error del contexto                 |
+| `components/auth/RegisterForm.test.jsx` | Integración | render, validaciones (nombre corto, email, contraseña, confirmación), submit, error           |
+| `components/notes/NoteForm.test.jsx`    | Integración | render, validaciones título/contenido, submit, pre-fill en edición                            |
+| `components/notes/NoteCard.test.jsx`    | Render      | título, tags, fechas, clic, sin tags                                                          |
+| `context/ThemeProvider.test.jsx`        | Integración | render, valor inicial, toggle light↔dark, persistencia localStorage, error fuera del provider |
+| `services/themeService.test.js`         | Unitario    | getInitialTheme (localStorage + sistema), setTheme, listenToSystemChanges                     |
 
 ---
 
@@ -222,16 +238,19 @@ npm run test
 npm run test:watch
 ```
 
-<img src="./public/screenshots/tests_minddrop.png" alt="Tests ejecutados" width="500">
+<img src="./public/screenshots/new_test_minddrop.png" alt="Tests ejecutados" width="500">
 
 ---
 
 ### Screenshots
 
-| Vista                  | Preview                                                                         |
-| ---------------------- | ------------------------------------------------------------------------------- |
-| Inicio de sesión       | <img src="./public/screenshots/login.png" alt="Login" width="500">              |
-| Dashboard con carpetas | <img src="./public/screenshots/desktop-folder.png" alt="Dashboard" width="500"> |
+| Vista                        | Preview                                                                                             |
+| ---------------------------- | --------------------------------------------------------------------------------------------------- |
+| Inicio de sesión             | <img src="./public/screenshots/login.png" alt="Login" width="500">                                  |
+| Inicio de sesión (dark-mode) | <img src="./public/screenshots/login_darkmode.png" alt="Inicio de sesión en dark mode" width="500"> |
+| Dashboard con carpetas       | <img src="./public/screenshots/desktop-folder.png" alt="Dashboard" width="500">                     |
+| Daskboard DarkMode           | <img src="./public/screenshots/desktop_darkmode.png" alt="Dashboard en Dark Mode" width="500">      |
+| Dashboard Tablet             | <img src="./public/screenshots/tablet_darkmode.png" alt="Dashboard Tablet Dark Mode" width="500">   |
 
 ---
 
@@ -251,3 +270,12 @@ Se optó por un sistema mixto para organizar las notas de forma intuitiva sin sa
 
 - **Carpetas por categoría**: 4 bloques (_Personal, Estudio, Trabajo, Ideas_) más una carpeta virtual _Sin categoría_. Cada nota pertenece a una sola y se accede a través de la navegación por carpetas.
 - **Etiquetas libres**: Los tags (`#importante`, `#codigo`) son transversales y conectan notas de diferentes carpetas.
+
+### ¿Por qué usamos el Theme System de MUI?
+
+Se eligió el sistema de temas nativo de **Material UI** en lugar de CSS classes para el modo oscuro porque el proyecto ya usa MUI en todos los componentes:
+
+- **Sin CSS adicional**: MUI ajusta automáticamente `palette.background`, `text.primary`, `divider`, etc. al cambiar `mode`.
+- **Basado en preferencias del sistema**: Si el usuario no elige un tema manualmente, respeta `prefers-color-scheme` del SO.
+- **Persistente**: La elección del usuario se guarda en `localStorage` y prevalece sobre la preferencia del sistema.
+- **Reactivo a cambios del SO**: El hook `listenToSystemChanges` actualiza el tema en vivo si el usuario cambia la preferencia del sistema (mientras no tenga una preferencia manual guardada).
